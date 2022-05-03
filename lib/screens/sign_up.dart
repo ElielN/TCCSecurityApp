@@ -18,9 +18,6 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Column(
             children: [
               Container(
-                /*decoration: BoxDecoration(
-                  border: Border.all()
-              ),*/
                 margin: const EdgeInsets.only(top: 20.0, bottom: 0.0),
                 child: Image.asset(
                   "assets/images/brasao_ufv.png",
