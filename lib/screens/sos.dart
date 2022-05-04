@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 
 class SOSPage extends StatefulWidget {
   const SOSPage({Key? key}) : super(key: key);
@@ -9,6 +10,9 @@ class SOSPage extends StatefulWidget {
 }
 
 class _SOSPageState extends State<SOSPage> {
+
+  int sosColor = 0xfff03131;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +37,7 @@ class _SOSPageState extends State<SOSPage> {
         child: Column(
           children: [
             Container(
-              margin: const EdgeInsets.only(top: 20.0, bottom: 0.0),
+              margin: const EdgeInsets.only(top: 10.0, bottom: 0.0),
               child: Image.asset(
                 "assets/images/brasao_ufv.png",
                 height: 200.0,
@@ -41,39 +45,73 @@ class _SOSPageState extends State<SOSPage> {
               ),
             ),
             const Divider(height: 20, color: Colors.transparent),
-            Container(
-              height: 260,
-              width: 260,
-              decoration: const BoxDecoration(
-                color: Color(0xffffffff),
-                borderRadius: BorderRadius.all(Radius.circular(200)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0xfff03131),
-                    spreadRadius: 8,
-                    blurRadius: 10,
-                  )
-                ]
-              ),
-              child: Center(
-                child: GestureDetector(
-                  onTap: () {},
-                  child: const Text(
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  if(sosColor == 0xfff03131) {
+                    sosColor = 0xff4caf50;
+                  } else {
+                    sosColor = 0xfff03131;
+                  }
+                });
+              },
+              child: Container(
+                height: 260,
+                width: 260,
+                decoration: BoxDecoration(
+                    color: const Color(0xffffffff),
+                    borderRadius: const BorderRadius.all(Radius.circular(200)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(sosColor),
+                        spreadRadius: 8,
+                        blurRadius: 10,
+                      )
+                    ]
+                ),
+                child: const Center(
+                  child: Text(
                     "SOS",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 60,
-                      fontWeight: FontWeight.w700
+                        fontFamily: 'Poppins',
+                        fontSize: 60,
+                        fontWeight: FontWeight.w700
                     ),
                   ),
                 ),
               ),
+            ),
 
-            )
+            const Divider(height: 40, color: Colors.transparent),
+            buildButton("Pedido de ajuda personalizado", 0xfff03131),
+            const Divider(height: 20, color: Colors.transparent),
+            buildButton("Abrir mapa de pedidos", 0xff4caf50),
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildButton(String text, int color) {
+    return ElevatedButton(
+        onPressed: () => {},
+        style: ElevatedButton.styleFrom(
+            primary: Color(color),
+            fixedSize: const Size(275, 60),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)
+            )
+        ),
+        child: Text(
+            text,
+            style: const TextStyle(
+              color: Color(0xffffffff),
+              fontSize: 16,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w500
+            )
+        )
     );
   }
 }
