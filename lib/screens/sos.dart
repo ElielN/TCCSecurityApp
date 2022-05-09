@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:tcc_security_app/screens/custom_help_request.dart';
 
 class SOSPage extends StatefulWidget {
   const SOSPage({Key? key}) : super(key: key);
@@ -95,7 +96,21 @@ class _SOSPageState extends State<SOSPage> {
 
   Widget buildButton(String text, int color) {
     return ElevatedButton(
-        onPressed: () => {},
+        onPressed: () {
+          if(text == "Pedido de ajuda personalizado") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CustomHelpPage()),
+            );
+          } else {
+            if(text == "Abrir mapa de pedidos") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CustomHelpPage()),
+              );
+            }
+          }
+        },
         style: ElevatedButton.styleFrom(
             primary: Color(color),
             fixedSize: const Size(275, 60),

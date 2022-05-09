@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_security_app/screens/sos.dart';
 
 
 class SignInPage extends StatefulWidget {
@@ -126,7 +127,12 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 const Divider(height: 30, color: Colors.transparent),
                 ElevatedButton(
-                    onPressed: () => {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SOSPage()),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                         primary: const Color(0xff5ac4ff),
                         fixedSize: const Size(213, 50),

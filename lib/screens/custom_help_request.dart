@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
+import 'package:tcc_security_app/screens/sos.dart';
 
 class CustomHelpPage extends StatefulWidget {
   const CustomHelpPage({Key? key}) : super(key: key);
@@ -12,6 +13,9 @@ class CustomHelpPage extends StatefulWidget {
 }
 
 class _CustomHelpPageState extends State<CustomHelpPage> {
+
+  String? buttonSelected;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,45 +142,9 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                          primary: const Color(0xff4caf50),
-                          fixedSize: const Size(150, 40),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0)
-                          )
-                      ),
-                      child: const Text(
-                        "Confirmar",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white
-                        ),
-                      )
-                  ),
+                  buttonConfirmCancel("Confirmar", 0xff4caf50),
                   const VerticalDivider(width: 10, color: Colors.transparent),
-                  ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                          primary: const Color(0xfff03131),
-                          fixedSize: const Size(150, 40),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0)
-                          )
-                      ),
-                      child: const Text(
-                        "Cancelar",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white
-                        ),
-                      )
-                  )
+                  buttonConfirmCancel("Cancelar", 0xfff03131)
                 ],
               )
             ],
@@ -186,11 +154,51 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
     );
   }
 
-  Widget buttonOrderSeverity(String label, int buttonColor) {
+  Widget buttonConfirmCancel(String text, int buttonColor) {
     return ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          if(text == "Confirmar") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SOSPage()),
+            );
+          } else {
+            if (text == "Cancelar") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SOSPage()),
+              );
+            }
+          }
+        },
         style: ElevatedButton.styleFrom(
             primary: Color(buttonColor),
+            fixedSize: const Size(150, 40),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)
+            )
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+              fontSize: 16,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold,
+              color: Colors.white
+          ),
+        )
+    );
+  }
+
+  Widget buttonOrderSeverity(String label, int buttonColor) {
+    return ElevatedButton(
+        onPressed: () {
+          setState(() {
+            buttonSelected = label;
+          });
+        },
+        style: ElevatedButton.styleFrom(
+            primary: (buttonSelected == label || buttonSelected == null) ? Color(buttonColor) : const Color(0xffcdcdcd),
             fixedSize: const Size(110, 50),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)

@@ -6,7 +6,7 @@ import 'package:tcc_security_app/screens/sos.dart';
 
 void main() {
   runApp(const MaterialApp(
-    home: CustomHelpPage(),
+    home: SignInPage(),
     debugShowCheckedModeBanner: false,
   ));
 }

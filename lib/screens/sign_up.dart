@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:tcc_security_app/screens/sos.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -101,7 +102,12 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               const Divider(height: 30, color: Colors.transparent),
               ElevatedButton(
-                  onPressed: () => {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SOSPage()),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                       primary: const Color(0xff5ac4ff),
                       fixedSize: const Size(213, 50),
