@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
+import 'package:tcc_security_app/Widgets/drawer.dart';
 import 'package:tcc_security_app/screens/sos.dart';
 
 class CustomHelpPage extends StatefulWidget {
@@ -20,7 +21,7 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffe5e5e5),
-      drawer: const Drawer(),
+      drawer: const NavDrawer(),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

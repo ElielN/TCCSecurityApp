@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:tcc_security_app/Widgets/drawer.dart';
 import 'package:tcc_security_app/screens/custom_help_request.dart';
 
 class SOSPage extends StatefulWidget {
@@ -17,7 +18,7 @@ class _SOSPageState extends State<SOSPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const Drawer(),
+      drawer: const NavDrawer(),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
