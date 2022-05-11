@@ -18,7 +18,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
           child: Column(
             children: [
               Container(
-                  margin: const EdgeInsets.only(top:60),
+                  margin: const EdgeInsets.only(top:70),
+                  decoration: const BoxDecoration(
+                      color: Color(0xffffffff),
+                      borderRadius: BorderRadius.all(Radius.circular(200)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xff5ac4ff),
+                          spreadRadius: 3,
+                          blurRadius: 10,
+                        )
+                      ]
+                  ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(100.0),
                     child: Image.asset(
@@ -32,7 +43,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 width: 300,
                 child: Column(
                   children: [
-                    const Divider(height: 60, color: Colors.transparent),
+                    const Divider(height: 40, color: Colors.transparent),
                     buildTextInput("Nome de exemplo"),
                     const Divider(height: 20, color: Colors.transparent),
                     buildTextInput("email.de.exemplo@ufv.br"),
