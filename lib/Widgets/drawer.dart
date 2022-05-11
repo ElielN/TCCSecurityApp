@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tcc_security_app/screens/edit_profile.dart';
+import 'package:tcc_security_app/screens/sign_in.dart';
+import 'package:tcc_security_app/screens/sign_up.dart';
+import 'package:tcc_security_app/screens/sos.dart';
 
 class NavDrawer extends StatelessWidget {
   const NavDrawer({Key? key}) : super(key: key);
@@ -37,27 +41,25 @@ class NavDrawer extends StatelessWidget {
             ),
           ),
           const Divider(height: 50, color: Colors.transparent),
-          /*const DrawerHeader(
-            child: Text(
-              'Side menu',
-              style: TextStyle(color: Colors.white, fontSize: 25),
-            ),
-            decoration: BoxDecoration(
-                color: Colors.green,
-                image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: AssetImage('assets/images/cover.jpg'))
-            ),
-          ),*/
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Editar informações'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const EditProfilePage()),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.exit_to_app),
             title: const Text('Deslogar'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SignInPage()),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.delete_forever),
@@ -65,7 +67,12 @@ class NavDrawer extends StatelessWidget {
               'Deletar conta',
               style: TextStyle(color: Color(0xfff03131))
             ),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SignUpPage()),
+              );
+            },
           ),
         ],
       ),

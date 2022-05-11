@@ -48,7 +48,12 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 const Divider(height: 80, color: Colors.transparent),
                 ElevatedButton(
-                    onPressed: () => {},
+                    onPressed: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SOSPage()),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                         primary: const Color(0xffffffff),
                         fixedSize: const Size(300, 40),

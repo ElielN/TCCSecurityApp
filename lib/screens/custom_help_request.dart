@@ -159,16 +159,10 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
     return ElevatedButton(
         onPressed: () {
           if(text == "Confirmar") {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SOSPage()),
-            );
+            Navigator.of(context).pop();
           } else {
             if (text == "Cancelar") {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SOSPage()),
-              );
+              Navigator.of(context).pop();
             }
           }
         },
