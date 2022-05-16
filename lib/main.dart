@@ -7,7 +7,7 @@ import 'package:tcc_security_app/screens/sos.dart';
 
 void main() {
   runApp(const MaterialApp(
-    home: EditProfilePage(),
+    home: SOSPage(),
     debugShowCheckedModeBanner: false,
   ));
 }

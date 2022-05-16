@@ -13,7 +13,10 @@ class SOSPage extends StatefulWidget {
 
 class _SOSPageState extends State<SOSPage> {
 
+  final TextEditingController _passwordController = TextEditingController();
+
   int sosColor = 0xfff03131;
+  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +56,12 @@ class _SOSPageState extends State<SOSPage> {
                   if(sosColor == 0xfff03131) {
                     sosColor = 0xff4caf50;
                   } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context){
+                        return alertDialogPassword();
+                      }
+                    );
                     sosColor = 0xfff03131;
                   }
                 });
@@ -128,6 +137,102 @@ class _SOSPageState extends State<SOSPage> {
               fontWeight: FontWeight.w500
             )
         )
+    );
+  }
+
+  Widget alertDialogPassword(){
+    return StatefulBuilder(
+      builder: (context, setState){
+        return AlertDialog(
+          elevation: 10,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))
+          ),
+          content: SizedBox(
+              width: 350.0,
+              height: 200.0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 25, bottom: 15),
+                    child: Text('test'),
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                          onPressed: (){
+                            setState((){
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                          icon: _obscurePassword ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility)
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.only(bottom: 10),
+                        width: 200,
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          decoration: const InputDecoration(
+                            labelText: "senha",
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 0,bottom: 10),
+                        child: ElevatedButton(
+                            onPressed: (){
+                              setState(() {
+
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.orangeAccent,
+                                elevation: 13.0,
+                                fixedSize: const Size(120, 20),
+                                textStyle: const TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.w800
+                                )
+                            ),
+                            child: const Text("Enviar")
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 30, bottom: 10),
+                        child: ElevatedButton(
+                            onPressed: (){
+                              setState(() {
+                                Navigator.pop(context);
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.orangeAccent,
+                                elevation: 13.0,
+                                fixedSize: const Size(120, 20),
+                                textStyle: const TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.w800
+                                )
+                            ),
+                            child: const Text("Cancelar")
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+          ),
+        );
+      },
     );
   }
 }
