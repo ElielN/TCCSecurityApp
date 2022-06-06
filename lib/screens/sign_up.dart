@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_security_app/screens/sos.dart';
 
@@ -10,6 +11,49 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController confirmEmailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  late GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  void _resetFields(){
+    nameController.text = "";
+    emailController.text = "";
+    confirmEmailController.text = "";
+    passwordController.text = "";
+    setState(() {
+      _formKey = GlobalKey<FormState>();
+    });
+  }
+
+  bool _validateEmail() {
+    if(!emailController.text.contains("@ufv.br")){
+      return false;
+    }
+    return true;
+  }
+
+  bool _validateConfirmEmail() {
+    if(emailController.text != confirmEmailController.text) {
+      return false;
+    }
+    return true;
+  }
+
+  bool _signUp() {
+    final user = <String, dynamic>{
+      "email": emailController.text,
+      "name": nameController.text,
+      "password": passwordController.text
+    };
+    //Future<DocumentReference> doc = FirebaseFirestore.instance.collection('users').add(user);
+    FirebaseFirestore.instance.collection('users').doc(emailController.text).set(user);
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,25 +137,30 @@ class _SignUpPageState extends State<SignUpPage> {
               const Divider(height: 10, color: Colors.transparent),
               SizedBox(
                 width: 300,
-                child: Column(
-                  children: [
-                    buildTextInput("Digite seu nome"),
-                    const Divider(height: 10, color: Colors.transparent),
-                    buildTextInput("Digite seu e-mail institucional"),
-                    const Divider(height: 10, color: Colors.transparent),
-                    buildTextInput("Confirme seu e-mail institucional"),
-                    const Divider(height: 10, color: Colors.transparent),
-                    buildTextInput("Digite sua senha"),
-                  ],
-                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      buildTextInput("Digite seu nome", nameController),
+                      const Divider(height: 10, color: Colors.transparent),
+                      buildTextInput("Digite seu e-mail institucional", emailController),
+                      const Divider(height: 10, color: Colors.transparent),
+                      buildTextInput("Confirme seu e-mail institucional", confirmEmailController),
+                      const Divider(height: 10, color: Colors.transparent),
+                      buildTextInput("Digite sua senha", passwordController),
+                    ],
+                  ),
+                )
               ),
               const Divider(height: 30, color: Colors.transparent),
               ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const SOSPage()),
-                    );
+                    if(_formKey.currentState!.validate() && _signUp()) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SOSPage()),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                       primary: const Color(0xff5ac4ff),
@@ -135,7 +184,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget buildTextInput(String label) {
+  Widget buildTextInput(String label, TextEditingController inputController) {
     return TextFormField(
       style: const TextStyle(
         fontFamily: 'Poppins',
@@ -155,6 +204,20 @@ class _SignUpPageState extends State<SignUpPage> {
             fontWeight: FontWeight.w100
         ),
       ),
+      controller: inputController,
+      validator: (value) {
+        if(value!.isEmpty) {
+          return "O preenchimento deste campo é obrigatório";
+        }
+        if (label == "Digite seu e-mail institucional" && !_validateEmail()){
+          //_resetFields();
+          return "Apenas e-mail da UFV é permitido";
+        }
+        if (label == "Confirme seu e-mail institucional" && !_validateConfirmEmail()){
+          //_resetFields();
+          return "E-mails diferentes";
+        }
+      },
     );
   }
 }

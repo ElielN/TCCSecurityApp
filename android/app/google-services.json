@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "509510837956",
+    "project_id": "tcc-securityapp",
+    "storage_bucket": "tcc-securityapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:509510837956:android:cd13bda0f202f88eda0b91",
+        "android_client_info": {
+          "package_name": "souza.eliel.tcc_security_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "509510837956-4aat0lopnmim46vejcq5lrv4u6lmt6oa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "souza.eliel.tcc_security_app",
+            "certificate_hash": "a7fe85f316d45404cfde973f163c2e93c5df2109"
+          }
+        },
+        {
+          "client_id": "509510837956-p6ukmqkmke2eu9t44hiprbnacg6v6l0l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQbpFKCKlYMN9q2pP7txsK4LsMIF3LUOE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "509510837956-p6ukmqkmke2eu9t44hiprbnacg6v6l0l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

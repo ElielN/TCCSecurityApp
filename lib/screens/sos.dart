@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -16,7 +17,14 @@ class _SOSPageState extends State<SOSPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   int sosColor = 0xfff03131;
-  bool _obscurePassword = true;
+  final bool _obscurePassword = true;
+  /*
+  @override
+  void initState() {
+    super.initState();
+
+    _getAllContacts();
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -141,90 +149,113 @@ class _SOSPageState extends State<SOSPage> {
   }
 
   Widget alertDialogPassword(){
+    /*
+    final user = <String, dynamic>{
+      "first": "Ada",
+      "last": "Lovelace",
+      "born": 1815
+    };
+    FirebaseFirestore.instance.collection('teste').add(user);
+    */
     return StatefulBuilder(
       builder: (context, setState){
         return AlertDialog(
           elevation: 10,
           shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0))
+              borderRadius: BorderRadius.all(Radius.circular(19.0))
           ),
           content: SizedBox(
               width: 350.0,
-              height: 200.0,
+              height: 320.0,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(top: 25, bottom: 15),
-                    child: Text('test'),
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                          onPressed: (){
-                            setState((){
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                          icon: _obscurePassword ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility)
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.only(bottom: 10),
-                        width: 200,
-                        child: TextFormField(
-                          textAlign: TextAlign.center,
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          decoration: const InputDecoration(
-                            labelText: "senha",
-                          ),
+                    padding: EdgeInsets.only(top: 0, bottom: 15),
+                    child: Center(
+                      child: Text(
+                        "!",
+                        style: TextStyle(
+                          color: Color(0xffbe212f),
+                          fontSize: 60,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w500
                         ),
                       ),
-                    ],
+                    ),
                   ),
+                  const Center(
+                    child: Text(
+                      "Digite sua senha para desativar o pedido de ajuda urgente",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  ),
+                  const Divider(height: 20, color: Colors.transparent),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
+                    ),
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(10.0))
+                      ),
+                      filled: true,
+                      fillColor: Color(0x20c4c4c4),
+                      hintText: "Digite sua senha",
+                      hintStyle: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w100
+                      ),
+                    ),
+                  ),
+                  const Divider(height: 40, color: Colors.transparent),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 0,bottom: 10),
-                        child: ElevatedButton(
-                            onPressed: (){
-                              setState(() {
+                      ElevatedButton(
+                          onPressed: (){
+                            setState(() {
 
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                                primary: Colors.orangeAccent,
-                                elevation: 13.0,
-                                fixedSize: const Size(120, 20),
-                                textStyle: const TextStyle(
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.w800
-                                )
-                            ),
-                            child: const Text("Enviar")
-                        ),
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                              primary: const Color(0xff4caf50),
+                              elevation: 5.0,
+                              fixedSize: const Size(123, 40),
+                              textStyle: const TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w800
+                              )
+                          ),
+                          child: const Text("Confirmar")
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 30, bottom: 10),
-                        child: ElevatedButton(
-                            onPressed: (){
-                              setState(() {
-                                Navigator.pop(context);
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                                primary: Colors.orangeAccent,
-                                elevation: 13.0,
-                                fixedSize: const Size(120, 20),
-                                textStyle: const TextStyle(
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.w800
-                                )
-                            ),
-                            child: const Text("Cancelar")
-                        ),
+                      const VerticalDivider(width: 20, color: Colors.transparent),
+                      ElevatedButton(
+                          onPressed: (){
+                            setState(() {
+                              Navigator.pop(context);
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                              primary: Color(0xfff03131),
+                              elevation: 5.0,
+                              fixedSize: const Size(123, 40),
+                              textStyle: const TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w800
+                              )
+                          ),
+                          child: const Text("Cancelar")
                       ),
                     ],
                   ),

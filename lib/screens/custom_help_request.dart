@@ -131,7 +131,7 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
                     ),
                     filled: true,
                     fillColor: Colors.white,
-                    hintText: "Escreva um título",
+                    hintText: "Escreva uma descrição",
                     hintStyle: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 12,
