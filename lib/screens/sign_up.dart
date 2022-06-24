@@ -36,7 +36,21 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-  Future<User?> signInGoogle(BuildContext context) async {
+  Future<bool> _emailAlreadyExists(String? userEmail) async {
+    bool exist = false;
+    if (userEmail != null) {
+      await FirebaseFirestore.instance
+          .doc("users/$userEmail")
+          .get()
+          .then((doc) {
+        exist = doc.exists;
+      });
+      return exist;
+    }
+    return false;
+  }
+
+  Future<User?> _signInGoogle(BuildContext context) async {
     if (_currentUser != null) return _currentUser;
 
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -84,15 +98,19 @@ class _SignUpPageState extends State<SignUpPage> {
         }
       }
     }
-    final userByGoogle = <String, dynamic>{
-      "email": user?.email,
-      "name": user?.displayName,
-    };
-    //Future<DocumentReference> doc = FirebaseFirestore.instance.collection('users').add(user);
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(user?.email)
-        .set(userByGoogle);
+
+    if (!(await _emailAlreadyExists(user?.email))) {
+      final userByGoogle = <String, dynamic>{
+        "email": user?.email,
+        "name": user?.displayName,
+      };
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(user?.email)
+          .set(userByGoogle);
+    } else {
+      print("O usuário já existe no banco de dados");
+    }
     return user;
   }
 
@@ -110,18 +128,24 @@ class _SignUpPageState extends State<SignUpPage> {
     return true;
   }
 
-  bool _signUp() {
-    final user = <String, dynamic>{
-      "email": emailController.text,
-      "name": nameController.text,
-      "password": passwordController.text
-    };
-    //Future<DocumentReference> doc = FirebaseFirestore.instance.collection('users').add(user);
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(emailController.text)
-        .set(user);
-    return true;
+  Future<bool> _signUp() async {
+    if (await _emailAlreadyExists(emailController.text)) {
+      return false;
+    } else {
+      final user = <String, dynamic>{
+        "email": emailController.text,
+        "name": nameController.text,
+        "password": passwordController.text
+      };
+      //Future<DocumentReference> doc = FirebaseFirestore.instance.collection('users').add(user);
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(emailController.text)
+          .set(user);
+      print(
+          "--------------------- O email ainda não está cadastrado -------------------");
+      return true;
+    }
   }
 
   @override
@@ -161,7 +185,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 const Divider(height: 20, color: Colors.transparent),
                 ElevatedButton(
                     onPressed: () async {
-                      final User? user = await signInGoogle(context);
+                      final User? user = await _signInGoogle(context);
                       if (user != null) {
                         Navigator.push(
                           context,
@@ -219,8 +243,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     )),
                 const Divider(height: 30, color: Colors.transparent),
                 ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate() && _signUp()) {
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate() &&
+                          await _signUp()) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
