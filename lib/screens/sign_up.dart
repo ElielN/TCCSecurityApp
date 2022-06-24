@@ -23,6 +23,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   final GoogleSignIn googleSingIn = GoogleSignIn();
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   User? _currentUser;
 
   @override
@@ -130,6 +132,10 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<bool> _signUp() async {
     if (await _emailAlreadyExists(emailController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Este e-mail já está cadastrado"),
+        backgroundColor: Colors.red,
+      ));
       return false;
     } else {
       final user = <String, dynamic>{
@@ -151,6 +157,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         backgroundColor: const Color(0xffe5e5e5),
         body: SingleChildScrollView(
           child: Center(
