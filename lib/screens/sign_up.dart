@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tcc_security_app/screens/sos.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:email_validator/email_validator.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -31,7 +32,6 @@ class _SignUpPageState extends State<SignUpPage> {
   void initState() {
     super.initState();
     FirebaseAuth.instance.authStateChanges().listen((user) {
-      //Sempre que a autenticação mudar, ele chamará a função anônima com o usuário atual
       setState(() {
         _currentUser = user;
       });
@@ -117,6 +117,12 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   bool _validateEmail() {
+    if (EmailValidator.validate(emailController.text)) return true;
+    return false;
+  }
+
+  bool _validateUFVEmail() {
+    emailController.text = emailController.text.replaceAll(" ", "");
     if (!emailController.text.contains("@ufv.br")) {
       return false;
     }
@@ -124,6 +130,8 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   bool _validateConfirmEmail() {
+    confirmEmailController.text =
+        confirmEmailController.text.replaceAll(" ", "");
     if (emailController.text != confirmEmailController.text) {
       return false;
     }
@@ -143,13 +151,10 @@ class _SignUpPageState extends State<SignUpPage> {
         "name": nameController.text,
         "password": passwordController.text
       };
-      //Future<DocumentReference> doc = FirebaseFirestore.instance.collection('users').add(user);
       FirebaseFirestore.instance
           .collection('users')
           .doc(emailController.text)
           .set(user);
-      print(
-          "--------------------- O email ainda não está cadastrado -------------------");
       return true;
     }
   }
@@ -297,13 +302,15 @@ class _SignUpPageState extends State<SignUpPage> {
         if (value!.isEmpty) {
           return "O preenchimento deste campo é obrigatório";
         }
-        if (label == "Digite seu e-mail institucional" && !_validateEmail()) {
-          //_resetFields();
+        if (label == "Digite seu e-mail institucional" &&
+            !_validateUFVEmail()) {
           return "Apenas e-mail da UFV é permitido";
+        }
+        if (label == "Digite seu e-mail institucional" && !_validateEmail()) {
+          return "Este e-mail não é válido";
         }
         if (label == "Confirme seu e-mail institucional" &&
             !_validateConfirmEmail()) {
-          //_resetFields();
           return "E-mails diferentes";
         }
       },
