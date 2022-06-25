@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +52,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<User?> _signInGoogle(BuildContext context) async {
-    if (_currentUser != null) return _currentUser;
+    if (_currentUser != null && _currentUser!.email!.contains("@ufv.br")) return _currentUser;
 
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
@@ -65,7 +64,16 @@ class _SignUpPageState extends State<SignUpPage> {
         final UserCredential userCredential =
             await auth.signInWithPopup(authProvider);
 
-        user = userCredential.user;
+        if(!userCredential.user!.email!.contains("@ufv.br")) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Apenas e-mails da UFV são permitidos"),
+            backgroundColor: Colors.red,
+          ));
+          await auth.currentUser!.delete();
+          return null;
+        } else {
+          user = userCredential.user;
+        }
       } catch (e) {
         print(e);
       }
@@ -85,10 +93,21 @@ class _SignUpPageState extends State<SignUpPage> {
         );
 
         try {
+
           final UserCredential userCredential =
               await auth.signInWithCredential(credential);
 
-          user = userCredential.user;
+          if(!userCredential.user!.email!.contains("@ufv.br")) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Apenas e-mails da UFV são permitidos"),
+              backgroundColor: Colors.red,
+            ));
+            await googleSignIn.signOut();
+            await auth.currentUser!.delete();
+            return null;
+          } else {
+            user = userCredential.user;
+          }
         } on FirebaseAuthException catch (e) {
           if (e.code == 'account-exists-with-different-credential') {
             return null;
@@ -199,6 +218,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     onPressed: () async {
                       final User? user = await _signInGoogle(context);
                       if (user != null) {
+                        print("EMAIL QUE VEIO = ${user.email}");
                         Navigator.push(
                           context,
                           MaterialPageRoute(
