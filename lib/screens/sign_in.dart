@@ -54,7 +54,7 @@ class _SignInPageState extends State<SignInPage> {
                     onPressed: (){
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SOSPage()),
+                        MaterialPageRoute(builder: (context) => const SOSPage(currentUser: null)),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -138,7 +138,7 @@ class _SignInPageState extends State<SignInPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SOSPage()),
+                        MaterialPageRoute(builder: (context) => const SOSPage(currentUser: null,)),
                       );
                     },
                     style: ElevatedButton.styleFrom(

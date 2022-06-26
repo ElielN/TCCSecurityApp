@@ -21,7 +21,7 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffe5e5e5),
-      drawer: const NavDrawer(),
+      drawer: const NavDrawer(currentUser: null,),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

@@ -5,8 +5,11 @@ import 'package:tcc_security_app/screens/sign_in.dart';
 import 'package:tcc_security_app/screens/sign_up.dart';
 import 'package:tcc_security_app/screens/sos.dart';
 
+import '../shared/models/user.dart';
+
 class NavDrawer extends StatelessWidget {
-  const NavDrawer({Key? key}) : super(key: key);
+  final CurrentUser? currentUser;
+  const NavDrawer({Key? key, required this.currentUser}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +32,9 @@ class NavDrawer extends StatelessWidget {
                   )
                 ),
                 const Divider(height: 20, color: Colors.transparent),
-                const Text(
-                  "username",
-                  style: TextStyle(
+                Text(
+                  currentUser!.name!,
+                  style: const TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 16,
                     fontWeight: FontWeight.bold

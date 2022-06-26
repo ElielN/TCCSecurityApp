@@ -5,6 +5,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tcc_security_app/screens/sos.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_core/firebase_core.dart';
+import '../shared/models/user.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -14,6 +16,7 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController confirmEmailController = TextEditingController();
@@ -26,6 +29,8 @@ class _SignUpPageState extends State<SignUpPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   User? _currentUser;
+
+  CurrentUser? userObj;
 
   @override
   void initState() {
@@ -55,7 +60,7 @@ class _SignUpPageState extends State<SignUpPage> {
     if (_currentUser != null && _currentUser!.email!.contains("@ufv.br")) return _currentUser;
 
     FirebaseAuth auth = FirebaseAuth.instance;
-    User? user;
+    User? userAuth;
 
     if (kIsWeb) {
       GoogleAuthProvider authProvider = GoogleAuthProvider();
@@ -72,7 +77,7 @@ class _SignUpPageState extends State<SignUpPage> {
           await auth.currentUser!.delete();
           return null;
         } else {
-          user = userCredential.user;
+          userAuth = userCredential.user;
         }
       } catch (e) {
         print(e);
@@ -106,7 +111,7 @@ class _SignUpPageState extends State<SignUpPage> {
             await auth.currentUser!.delete();
             return null;
           } else {
-            user = userCredential.user;
+            userAuth = userCredential.user;
           }
         } on FirebaseAuthException catch (e) {
           if (e.code == 'account-exists-with-different-credential') {
@@ -120,19 +125,24 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     }
 
-    if (!(await _emailAlreadyExists(user?.email))) {
+    if (!(await _emailAlreadyExists(userAuth?.email))) {
       final userByGoogle = <String, dynamic>{
-        "email": user?.email,
-        "name": user?.displayName,
+        "email": userAuth?.email,
+        "name": userAuth?.displayName,
       };
       FirebaseFirestore.instance
           .collection('users')
-          .doc(user?.email)
+          .doc(userAuth?.email)
           .set(userByGoogle);
+
+      userObj?.name = userAuth!.displayName!;
+      userObj?.email = userAuth!.email!;
+      userObj?.avatar = userAuth?.photoURL;
+
     } else {
       print("O usuário já existe no banco de dados");
     }
-    return user;
+    return userAuth;
   }
 
   bool _validateEmail() {
@@ -174,6 +184,10 @@ class _SignUpPageState extends State<SignUpPage> {
           .collection('users')
           .doc(emailController.text)
           .set(user);
+
+      userObj?.name = user["name"];
+      userObj?.email = user["email"];
+
       return true;
     }
   }
@@ -218,11 +232,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     onPressed: () async {
                       final User? user = await _signInGoogle(context);
                       if (user != null) {
-                        print("EMAIL QUE VEIO = ${user.email}");
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const SOSPage()),
+                              builder: (context) => SOSPage(currentUser: userObj)),
                         );
                       }
                     },
@@ -281,7 +294,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const SOSPage()),
+                              builder: (context) => SOSPage(currentUser: userObj)),
                         );
                       }
                     },

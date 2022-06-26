@@ -1,12 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:tcc_security_app/Widgets/drawer.dart';
 import 'package:tcc_security_app/screens/custom_help_request.dart';
 
+import '../shared/models/user.dart';
+
 class SOSPage extends StatefulWidget {
-  const SOSPage({Key? key}) : super(key: key);
+  final CurrentUser? currentUser;
+  const SOSPage({Key? key, required this.currentUser}) : super(key: key);
+  //const SOSPage({super.key, this.user});
+
 
   @override
   State<SOSPage> createState() => _SOSPageState();
@@ -18,18 +22,25 @@ class _SOSPageState extends State<SOSPage> {
 
   int sosColor = 0xfff03131;
   final bool _obscurePassword = true;
-  /*
+
+  late CurrentUser user;
+
   @override
   void initState() {
     super.initState();
 
-    _getAllContacts();
-  }*/
+    if(widget.currentUser == null) {
+      user = CurrentUser("name default error", "e-mail default error");
+      print(widget.currentUser?.name);
+    } else {
+      user = widget.currentUser!;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const NavDrawer(),
+      drawer: NavDrawer(currentUser: user),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -149,14 +160,6 @@ class _SOSPageState extends State<SOSPage> {
   }
 
   Widget alertDialogPassword(){
-    /*
-    final user = <String, dynamic>{
-      "first": "Ada",
-      "last": "Lovelace",
-      "born": 1815
-    };
-    FirebaseFirestore.instance.collection('teste').add(user);
-    */
     return StatefulBuilder(
       builder: (context, setState){
         return AlertDialog(
