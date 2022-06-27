@@ -58,7 +58,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<User?> _signInGoogle(BuildContext context) async {
     if (_currentUser != null && _currentUser!.email!.contains("@ufv.br")) {
-      userObj = CurrentUser(_currentUser!.displayName!, _currentUser!.email!, avatar: _currentUser!.photoURL, loginByGoogle: true);
+      userObj = CurrentUser(_currentUser!.displayName!, _currentUser!.email!, avatar: _currentUser!.photoURL!, loginByGoogle: true);
       return _currentUser;
     }
 
@@ -142,7 +142,7 @@ class _SignUpPageState extends State<SignUpPage> {
       //userObj.email = userAuth.email!;
       //userObj.avatar = userAuth.photoURL;
 
-      userObj = CurrentUser(userAuth!.displayName!, userAuth.email!, avatar: userAuth.photoURL, loginByGoogle: true);
+      userObj = CurrentUser(userAuth!.displayName!, userAuth.email!, avatar: userAuth.photoURL!, loginByGoogle: true);
 
     } else {
       print("O usuário já existe no banco de dados");

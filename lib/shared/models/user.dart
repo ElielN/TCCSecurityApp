@@ -1,9 +1,9 @@
 class CurrentUser{
   late final String name;
   late final String email;
-  String? avatar;
+  String avatar;
   String? number;
-  bool showNumber = false;
+  bool showNumber;
   String? cpf;
   String? registration;
   bool loginByGoogle;
