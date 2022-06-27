@@ -7,7 +7,7 @@ import 'package:tcc_security_app/screens/custom_help_request.dart';
 import '../shared/models/user.dart';
 
 class SOSPage extends StatefulWidget {
-  final CurrentUser? currentUser;
+  final CurrentUser currentUser;
   const SOSPage({Key? key, required this.currentUser}) : super(key: key);
   //const SOSPage({super.key, this.user});
 
@@ -31,9 +31,9 @@ class _SOSPageState extends State<SOSPage> {
 
     if(widget.currentUser == null) {
       user = CurrentUser("name default error", "e-mail default error");
-      print(widget.currentUser?.name);
+      print(widget.currentUser.name);
     } else {
-      user = widget.currentUser!;
+      user = widget.currentUser;
     }
   }
 

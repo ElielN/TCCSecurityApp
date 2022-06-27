@@ -8,7 +8,7 @@ import 'package:tcc_security_app/screens/sos.dart';
 import '../shared/models/user.dart';
 
 class NavDrawer extends StatelessWidget {
-  final CurrentUser? currentUser;
+  final CurrentUser currentUser;
   const NavDrawer({Key? key, required this.currentUser}) : super(key: key);
 
   @override
@@ -24,16 +24,24 @@ class NavDrawer extends StatelessWidget {
                   margin: const EdgeInsets.only(top:60),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(100.0),
-                    child: Image.asset(
-                      "assets/images/random_person.jpg",
-                      height: 200,
-                      width: 200,
+                    child: currentUser.loginByGoogle ?
+                    Image.network(
+                      currentUser.avatar!,
+                      height: 150,
+                      width: 150,
+                      fit: BoxFit.cover,
+                    )
+                    :
+                    Image.asset(
+                      currentUser.avatar!,
+                      height: 150,
+                      width: 150,
                     ),
                   )
                 ),
                 const Divider(height: 20, color: Colors.transparent),
                 Text(
-                  currentUser!.name!,
+                  currentUser!.name,
                   style: const TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 16,

@@ -30,7 +30,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   User? _currentUser;
 
-  CurrentUser? userObj;
+  late CurrentUser userObj;
 
   @override
   void initState() {
@@ -57,7 +57,10 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<User?> _signInGoogle(BuildContext context) async {
-    if (_currentUser != null && _currentUser!.email!.contains("@ufv.br")) return _currentUser;
+    if (_currentUser != null && _currentUser!.email!.contains("@ufv.br")) {
+      userObj = CurrentUser(_currentUser!.displayName!, _currentUser!.email!, avatar: _currentUser!.photoURL, loginByGoogle: true);
+      return _currentUser;
+    }
 
     FirebaseAuth auth = FirebaseAuth.instance;
     User? userAuth;
@@ -135,9 +138,11 @@ class _SignUpPageState extends State<SignUpPage> {
           .doc(userAuth?.email)
           .set(userByGoogle);
 
-      userObj?.name = userAuth!.displayName!;
-      userObj?.email = userAuth!.email!;
-      userObj?.avatar = userAuth?.photoURL;
+      //userObj.name = userAuth!.displayName!;
+      //userObj.email = userAuth.email!;
+      //userObj.avatar = userAuth.photoURL;
+
+      userObj = CurrentUser(userAuth!.displayName!, userAuth.email!, avatar: userAuth.photoURL, loginByGoogle: true);
 
     } else {
       print("O usuário já existe no banco de dados");
@@ -185,8 +190,7 @@ class _SignUpPageState extends State<SignUpPage> {
           .doc(emailController.text)
           .set(user);
 
-      userObj?.name = user["name"];
-      userObj?.email = user["email"];
+      userObj = CurrentUser(user["name"], user["email"]);
 
       return true;
     }

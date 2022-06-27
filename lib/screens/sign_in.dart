@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_security_app/screens/sos.dart';
-
+import '../shared/models/user.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -11,7 +11,7 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
 
-
+  CurrentUser user = CurrentUser('test name', 'test email');
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class _SignInPageState extends State<SignInPage> {
                     onPressed: (){
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SOSPage(currentUser: null)),
+                        MaterialPageRoute(builder: (context) => SOSPage(currentUser: user)),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -138,7 +138,7 @@ class _SignInPageState extends State<SignInPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SOSPage(currentUser: null,)),
+                        MaterialPageRoute(builder: (context) => SOSPage(currentUser: user)),
                       );
                     },
                     style: ElevatedButton.styleFrom(

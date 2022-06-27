@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:tcc_security_app/Widgets/drawer.dart';
 import 'package:tcc_security_app/screens/sos.dart';
+import '../shared/models/user.dart';
 
 class CustomHelpPage extends StatefulWidget {
   const CustomHelpPage({Key? key}) : super(key: key);
@@ -17,11 +18,13 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
 
   String? buttonSelected;
 
+  CurrentUser user = CurrentUser("nome test", "email test");
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffe5e5e5),
-      drawer: const NavDrawer(currentUser: null,),
+      drawer: NavDrawer(currentUser: user),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

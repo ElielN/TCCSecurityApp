@@ -1,13 +1,14 @@
 class CurrentUser{
-  String name;
-  String email;
+  late final String name;
+  late final String email;
   String? avatar;
   String? number;
   bool showNumber = false;
   String? cpf;
   String? registration;
+  bool loginByGoogle;
 
-  CurrentUser(this.name, this.email, {this.avatar, this.number, this.showNumber = false, this.cpf, this.registration});
+  CurrentUser(this.name, this.email, {this.avatar = "assets/images/random_person.jpg", this.number, this.showNumber = false, this.cpf, this.registration, this.loginByGoogle = false});
 
 }
 
