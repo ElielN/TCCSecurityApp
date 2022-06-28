@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:tcc_security_app/screens/sign_up.dart';
 import 'package:tcc_security_app/screens/sos.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import '../shared/models/user.dart';
@@ -271,7 +272,10 @@ class _SignInPageState extends State<SignInPage> {
                 const Divider(height: 5, color: Colors.transparent),
                 GestureDetector(
                   onTap: () {
-                    debugPrint("Cadastrar");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SignUpPage()),
+                    );
                   },
                   child: const Text(
                     "Cadastrar",

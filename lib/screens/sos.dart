@@ -127,72 +127,74 @@ class _SOSPageState extends State<SOSPage> {
       ),
       backgroundColor: const Color(0xffe5e5e5),
       body: Center(
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.only(top: 10.0, bottom: 0.0),
-              child: Image.asset(
-                "assets/images/brasao_ufv.png",
-                height: 200.0,
-                width: 200.0,
-              ),
-            ),
-            const Divider(height: 20, color: Colors.transparent),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  if(sosColor == 0xfff03131) {
-                    getCurrentLocation().then((value) {
-                      turnOnSOS(value);
-                      print(value.latitude);
-                      print(value.longitude);
-                    });
-                    sosColor = 0xff4caf50;
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context){
-                        return alertDialogPassword();
-                      }
-                    );
-                    sosColor = 0xfff03131;
-                  }
-                });
-              },
-              child: Container(
-                height: 260,
-                width: 260,
-                decoration: BoxDecoration(
-                    color: const Color(0xffffffff),
-                    borderRadius: const BorderRadius.all(Radius.circular(200)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(sosColor),
-                        spreadRadius: 8,
-                        blurRadius: 10,
-                      )
-                    ]
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 10.0, bottom: 0.0),
+                child: Image.asset(
+                  "assets/images/brasao_ufv.png",
+                  height: 200.0,
+                  width: 200.0,
                 ),
-                child: const Center(
-                  child: Text(
-                    "SOS",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 60,
-                        fontWeight: FontWeight.w700
+              ),
+              const Divider(height: 20, color: Colors.transparent),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if(sosColor == 0xfff03131) {
+                      getCurrentLocation().then((value) {
+                        turnOnSOS(value);
+                        print(value.latitude);
+                        print(value.longitude);
+                      });
+                      sosColor = 0xff4caf50;
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context){
+                            return alertDialogPassword();
+                          }
+                      );
+                      sosColor = 0xfff03131;
+                    }
+                  });
+                },
+                child: Container(
+                  height: 260,
+                  width: 260,
+                  decoration: BoxDecoration(
+                      color: const Color(0xffffffff),
+                      borderRadius: const BorderRadius.all(Radius.circular(200)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(sosColor),
+                          spreadRadius: 8,
+                          blurRadius: 10,
+                        )
+                      ]
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "SOS",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 60,
+                          fontWeight: FontWeight.w700
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
 
-            const Divider(height: 40, color: Colors.transparent),
-            buildButton("Pedido de ajuda personalizado", 0xfff03131),
-            const Divider(height: 20, color: Colors.transparent),
-            buildButton("Abrir mapa de pedidos", 0xff4caf50),
-          ],
-        ),
+              const Divider(height: 40, color: Colors.transparent),
+              buildButton("Pedido de ajuda personalizado", 0xfff03131),
+              const Divider(height: 20, color: Colors.transparent),
+              buildButton("Abrir mapa de pedidos", 0xff4caf50),
+            ],
+          ),
+        )
       ),
     );
   }
