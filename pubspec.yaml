@@ -43,6 +43,7 @@ dependencies:
   email_validator: ^2.0.1
   google_maps_flutter: ^2.0.4
   location: ^4.2.0
+  geolocator: ^7.0.2
 
 dev_dependencies:
   flutter_test:

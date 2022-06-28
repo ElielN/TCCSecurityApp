@@ -59,6 +59,18 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<User?> _signInGoogle(BuildContext context) async {
     if (_currentUser != null && _currentUser!.email!.contains("@ufv.br")) {
       userObj = CurrentUser(_currentUser!.displayName!, _currentUser!.email!, avatar: _currentUser!.photoURL!, loginByGoogle: true);
+      if (!(await _emailAlreadyExists(_currentUser?.email))) {
+        final userByGoogle = <String, dynamic>{
+          "email": _currentUser?.email,
+          "name": _currentUser?.displayName,
+        };
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(_currentUser?.email)
+            .set(userByGoogle);
+
+        userObj = CurrentUser(_currentUser!.displayName!, _currentUser!.email!, avatar: _currentUser!.photoURL!, loginByGoogle: true);
+      }
       return _currentUser;
     }
 
@@ -138,11 +150,8 @@ class _SignUpPageState extends State<SignUpPage> {
           .doc(userAuth?.email)
           .set(userByGoogle);
 
-      //userObj.name = userAuth!.displayName!;
-      //userObj.email = userAuth.email!;
-      //userObj.avatar = userAuth.photoURL;
-
       userObj = CurrentUser(userAuth!.displayName!, userAuth.email!, avatar: userAuth.photoURL!, loginByGoogle: true);
+      print("TAATATATATAATATAAATATA");
 
     } else {
       print("O usuário já existe no banco de dados");

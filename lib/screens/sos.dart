@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -5,6 +6,7 @@ import 'package:tcc_security_app/Widgets/drawer.dart';
 import 'package:tcc_security_app/screens/custom_help_request.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../shared/models/user.dart';
 
@@ -28,10 +30,14 @@ class _SOSPageState extends State<SOSPage> {
 
   late CurrentUser user;
 
+  late Position currentLocation;
 
+
+  /*
   LatLng _initialcameraposition = LatLng(20.5937, 78.9629);
   late GoogleMapController _controller;
   final Location _location = Location();
+  */
 
   @override
   void initState() {
@@ -45,16 +51,33 @@ class _SOSPageState extends State<SOSPage> {
     }
   }
 
-  void testLocation() async {
-    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-    if(await _location.onLocationChanged.isEmpty) {
-      print("EMPTY LOCATION!!");
-      print(_location);
-    }
-    _location.onLocationChanged.listen((loc) {
-      print("Latitude: " + loc.latitude.toString());
-      print("Longitude: " + loc.longitude.toString());
-    });
+  Future<Position> getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
+    return position;
+  }
+
+  void turnOnSOS(Position location) {
+    final sosData = <String, dynamic>{
+      "currentLocation": {
+        "latitude": location.latitude,
+        "longitude": location.longitude,
+      },
+      "description": "",
+      "urgency": 4,
+      "showNumber": true,
+      "date": DateTime.now(),
+      "userData": user.email
+    };
+    FirebaseFirestore.instance
+        .collection('requests')
+        .doc(user.email)
+        .set(sosData);
+  }
+
+  void turnOffSOS() {
+    FirebaseFirestore.instance
+        .collection('requests')
+        .doc(user.email).delete();
   }
 
   @override
@@ -91,11 +114,16 @@ class _SOSPageState extends State<SOSPage> {
             const Divider(height: 20, color: Colors.transparent),
             GestureDetector(
               onTap: () {
-                testLocation();
                 setState(() {
                   if(sosColor == 0xfff03131) {
+                    getCurrentLocation().then((value) {
+                      turnOnSOS(value);
+                      print(value.latitude);
+                      print(value.longitude);
+                    });
                     sosColor = 0xff4caf50;
                   } else {
+                    turnOffSOS();
                     showDialog(
                       context: context,
                       builder: (BuildContext context){
