@@ -22,8 +22,6 @@ class SOSPage extends StatefulWidget {
 
 class _SOSPageState extends State<SOSPage> {
 
-  final TextEditingController _passwordController = TextEditingController();
-
   int sosColor = 0xfff03131;
 
   final bool _obscurePassword = true;
@@ -31,6 +29,8 @@ class _SOSPageState extends State<SOSPage> {
   late CurrentUser user;
 
   late Position currentLocation;
+
+  final TextEditingController _passController = TextEditingController();
 
 
   /*
@@ -54,6 +54,32 @@ class _SOSPageState extends State<SOSPage> {
   Future<Position> getCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
     return position;
+  }
+
+  Future<bool> verifyPass(String pass) async {
+    bool success = false;
+    if(pass.contains("@ufv.br")){
+      await FirebaseFirestore.instance
+          .doc("users/$pass")
+          .get().then((doc) {
+            if(doc.exists && pass == user.email) {
+              success = true;
+            } else {
+              success = false;
+            }
+      });
+    } else {
+      var docSnapshot = await FirebaseFirestore.instance.collection("users").doc(user.email).get();
+      if(docSnapshot.exists) {
+        Map<String, dynamic>? data = docSnapshot.data();
+        if(data?["password"] == pass) {
+          success = true;
+        } else {
+          success = false;
+        }
+      }
+    }
+    return success;
   }
 
   void turnOnSOS(Position location) {
@@ -123,7 +149,6 @@ class _SOSPageState extends State<SOSPage> {
                     });
                     sosColor = 0xff4caf50;
                   } else {
-                    turnOffSOS();
                     showDialog(
                       context: context,
                       builder: (BuildContext context){
@@ -238,7 +263,7 @@ class _SOSPageState extends State<SOSPage> {
                   ),
                   const Center(
                     child: Text(
-                      "Digite sua senha para desativar o pedido de ajuda urgente",
+                      "Digite sua senha ou e-mail para desativar o pedido de ajuda urgente",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
@@ -249,7 +274,7 @@ class _SOSPageState extends State<SOSPage> {
                   ),
                   const Divider(height: 20, color: Colors.transparent),
                   TextFormField(
-                    controller: _passwordController,
+                    controller: _passController,
                     obscureText: _obscurePassword,
                     style: const TextStyle(
                       fontFamily: 'Poppins',
@@ -275,10 +300,14 @@ class _SOSPageState extends State<SOSPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                          onPressed: (){
-                            setState(() {
-
-                            });
+                          onPressed: () async {
+                            if(await verifyPass(_passController.text)) {
+                              setState((){
+                                turnOffSOS();
+                                _passController.clear();
+                                Navigator.pop(context);
+                              });
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                               primary: const Color(0xff4caf50),

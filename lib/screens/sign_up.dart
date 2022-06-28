@@ -344,6 +344,7 @@ class _SignUpPageState extends State<SignUpPage> {
             fontFamily: 'Poppins', fontSize: 12, fontWeight: FontWeight.w100),
       ),
       controller: inputController,
+      obscureText: (label == "Digite sua senha") ? true : false,
       validator: (value) {
         if (value!.isEmpty) {
           return "O preenchimento deste campo é obrigatório";
