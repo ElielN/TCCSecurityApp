@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tcc_security_app/screens/sos.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../shared/models/user.dart';
 
 class SignInPage extends StatefulWidget {
@@ -11,7 +15,148 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
 
-  CurrentUser user = CurrentUser('test name', 'test email');
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  final GoogleSignIn googleSingIn = GoogleSignIn();
+
+  User? _currentUser;
+  late CurrentUser userObj;
+
+  Future<bool> _emailAlreadyExists(String? userEmail) async {
+    bool exist = false;
+    if (userEmail != null) {
+      await FirebaseFirestore.instance
+          .doc("users/$userEmail")
+          .get()
+          .then((doc) {
+        exist = doc.exists;
+      });
+      return exist;
+    }
+    return false;
+  }
+
+  Future<User?> _signInGoogle(BuildContext context) async {
+    if (_currentUser != null && _currentUser!.email!.contains("@ufv.br")) {
+      userObj = CurrentUser(_currentUser!.displayName!, _currentUser!.email!, avatar: _currentUser!.photoURL!, loginByGoogle: true);
+      if (!(await _emailAlreadyExists(_currentUser?.email))) {
+        final userByGoogle = <String, dynamic>{
+          "email": _currentUser?.email,
+          "name": _currentUser?.displayName,
+        };
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(_currentUser?.email)
+            .set(userByGoogle);
+
+        userObj = CurrentUser(_currentUser!.displayName!, _currentUser!.email!, avatar: _currentUser!.photoURL!, loginByGoogle: true);
+      }
+      return _currentUser;
+    }
+
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? userAuth;
+
+    if (kIsWeb) {
+      GoogleAuthProvider authProvider = GoogleAuthProvider();
+
+      try {
+        final UserCredential userCredential =
+        await auth.signInWithPopup(authProvider);
+
+        if(!userCredential.user!.email!.contains("@ufv.br")) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Apenas e-mails da UFV são permitidos"),
+            backgroundColor: Colors.red,
+          ));
+          await auth.currentUser!.delete();
+          return null;
+        } else {
+          userAuth = userCredential.user;
+        }
+      } catch (e) {
+        print(e);
+      }
+    } else {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+
+      final GoogleSignInAccount? googleSignInAccount =
+      await googleSignIn.signIn();
+
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+
+        try {
+
+          final UserCredential userCredential =
+          await auth.signInWithCredential(credential);
+
+          if(!userCredential.user!.email!.contains("@ufv.br")) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Apenas e-mails da UFV são permitidos"),
+              backgroundColor: Colors.red,
+            ));
+            await googleSignIn.signOut();
+            await auth.currentUser!.delete();
+            return null;
+          } else {
+            userAuth = userCredential.user;
+          }
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'account-exists-with-different-credential') {
+            return null;
+          } else if (e.code == 'invalid-credential') {
+            return null;
+          }
+        } catch (e) {
+          return null;
+        }
+      }
+    }
+
+    if (!(await _emailAlreadyExists(userAuth?.email))) {
+      final userByGoogle = <String, dynamic>{
+        "email": userAuth?.email,
+        "name": userAuth?.displayName,
+      };
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(userAuth?.email)
+          .set(userByGoogle);
+
+      userObj = CurrentUser(userAuth!.displayName!, userAuth.email!, avatar: userAuth.photoURL!, loginByGoogle: true);
+    } else {
+      var docSnapshot = await FirebaseFirestore.instance.collection("users").doc(userAuth?.email!).get();
+      if(docSnapshot.exists) {
+        Map<String, dynamic>? data = docSnapshot.data();
+        userObj = CurrentUser(data!["name"], data!["email"], avatar: userAuth!.photoURL!, loginByGoogle: true);
+      }
+      print("O usuário já existe no banco de dados");
+    }
+    return userAuth;
+  }
+
+  Future<bool> _signIn() async {
+    var docSnapshot = await FirebaseFirestore.instance.collection("users").doc(emailController.text).get();
+    if(docSnapshot.exists) {
+      Map<String, dynamic>? data = docSnapshot.data();
+      if(passwordController.text == data!["password"]){
+        userObj = CurrentUser(data!["name"], data!["email"], loginByGoogle: false);
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +196,15 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 const Divider(height: 80, color: Colors.transparent),
                 ElevatedButton(
-                    onPressed: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SOSPage(currentUser: user)),
-                      );
+                    onPressed: () async {
+                      final User? user = await _signInGoogle(context);
+                      if (user != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SOSPage(currentUser: userObj)),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                         primary: const Color(0xffffffff),
@@ -99,9 +248,9 @@ class _SignInPageState extends State<SignInPage> {
                   width: 300,
                   child: Column(
                     children: [
-                      buildTextInput("Digite seu e-mail institucional"),
+                      buildTextInput("Digite seu e-mail institucional", emailController),
                       const Divider(height: 20, color: Colors.transparent),
-                      buildTextInput("Digite sua senha"),
+                      buildTextInput("Digite sua senha", passwordController),
                     ],
                   ),
                 ),
@@ -135,11 +284,20 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 const Divider(height: 30, color: Colors.transparent),
                 ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SOSPage(currentUser: user)),
-                      );
+                    onPressed: () async {
+                      if(await _signIn()){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SOSPage(currentUser: userObj)),
+                        );
+                      } else {
+                        emailController.clear();
+                        passwordController.clear();
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text("E-mail e/ou senha inválidos :("),
+                          backgroundColor: Colors.red,
+                        ));
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                         primary: const Color(0xff5ac4ff),
@@ -163,8 +321,10 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget buildTextInput(String label) {
+  Widget buildTextInput(String label, TextEditingController inputController) {
     return TextFormField(
+      controller: inputController,
+      obscureText: (label == "Digite sua senha") ? true : false,
       style: const TextStyle(
         fontFamily: 'Poppins',
         fontSize: 16,

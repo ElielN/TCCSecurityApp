@@ -151,7 +151,6 @@ class _SignUpPageState extends State<SignUpPage> {
           .set(userByGoogle);
 
       userObj = CurrentUser(userAuth!.displayName!, userAuth.email!, avatar: userAuth.photoURL!, loginByGoogle: true);
-      print("TAATATATATAATATAAATATA");
 
     } else {
       print("O usuário já existe no banco de dados");
