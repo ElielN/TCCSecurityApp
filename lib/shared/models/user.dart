@@ -8,7 +8,7 @@ class CurrentUser{
   String? registration;
   bool loginByGoogle;
 
-  CurrentUser(this.name, this.email, {this.avatar = "assets/images/random_person.jpg", this.number, this.showNumber = false, this.cpf, this.registration, this.loginByGoogle = false});
+  CurrentUser(this.name, this.email, {this.avatar = "assets/images/capivara.jpg", this.number, this.showNumber = false, this.cpf, this.registration, this.loginByGoogle = false});
 
 }
 

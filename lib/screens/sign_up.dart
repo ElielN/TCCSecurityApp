@@ -294,7 +294,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               confirmEmailController),
                           const Divider(height: 10, color: Colors.transparent),
                           buildTextInput(
-                              "Digite sua senha", passwordController),
+                              "Digite sua senha", passwordController, obscure: true),
                         ],
                       ),
                     )),
@@ -326,7 +326,7 @@ class _SignUpPageState extends State<SignUpPage> {
         ));
   }
 
-  Widget buildTextInput(String label, TextEditingController inputController) {
+  Widget buildTextInput(String label, TextEditingController inputController, {bool obscure = false}) {
     return TextFormField(
       style: const TextStyle(
         fontFamily: 'Poppins',
@@ -343,7 +343,7 @@ class _SignUpPageState extends State<SignUpPage> {
             fontFamily: 'Poppins', fontSize: 12, fontWeight: FontWeight.w100),
       ),
       controller: inputController,
-      obscureText: (label == "Digite sua senha") ? true : false,
+      obscureText: obscure,
       validator: (value) {
         if (value!.isEmpty) {
           return "O preenchimento deste campo é obrigatório";
