@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tcc_security_app/screens/sos.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_core/firebase_core.dart';
 import '../shared/models/user.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -41,6 +41,7 @@ class _SignUpPageState extends State<SignUpPage> {
       });
     });
   }
+
 
   Future<bool> _emailAlreadyExists(String? userEmail) async {
     bool exist = false;
@@ -311,7 +312,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                        primary: const Color(0xff5ac4ff),
+                        backgroundColor: const Color(0xff5ac4ff),
                         fixedSize: const Size(213, 50),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0))),

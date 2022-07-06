@@ -11,7 +11,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MaterialApp(
-    home: SignUpPage(),
+    home: SignInPage(),
     debugShowCheckedModeBanner: false,
   ));
   //await Firebase.initializeApp();

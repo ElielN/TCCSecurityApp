@@ -46,7 +46,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         if(data.containsKey('password')) {
           _passwordController.text = data["password"];
         } else {
-          _passwordController.text = " ";
+          _passwordController.text = data["email"];
         }
         _nameController.text = data["name"];
         _emailController.text = data["email"];

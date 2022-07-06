@@ -32,13 +32,6 @@ class _SOSPageState extends State<SOSPage> {
 
   final TextEditingController _passController = TextEditingController();
 
-
-  /*
-  LatLng _initialcameraposition = LatLng(20.5937, 78.9629);
-  late GoogleMapController _controller;
-  final Location _location = Location();
-  */
-
   @override
   void initState() {
     super.initState();
@@ -205,13 +198,13 @@ class _SOSPageState extends State<SOSPage> {
           if(text == "Pedido de ajuda personalizado") {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const CustomHelpPage()),
+              MaterialPageRoute(builder: (context) => CustomHelpPage(currentUser: user)),
             );
           } else {
             if(text == "Abrir mapa de pedidos") {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const CustomHelpPage()),
+                MaterialPageRoute(builder: (context) => CustomHelpPage(currentUser: user)),
               );
             }
           }

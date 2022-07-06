@@ -8,7 +8,8 @@ import 'package:tcc_security_app/screens/sos.dart';
 import '../shared/models/user.dart';
 
 class CustomHelpPage extends StatefulWidget {
-  const CustomHelpPage({Key? key}) : super(key: key);
+  final CurrentUser currentUser;
+  const CustomHelpPage({Key? key, required this.currentUser}) : super(key: key);
 
   @override
   State<CustomHelpPage> createState() => _CustomHelpPageState();
@@ -16,13 +17,35 @@ class CustomHelpPage extends StatefulWidget {
 
 class _CustomHelpPageState extends State<CustomHelpPage> {
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+
   String? buttonSelected;
 
-  CurrentUser user = CurrentUser("nome test", "email test");
+  int helpSeverity = -1;
+
+  late CurrentUser user;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if(widget.currentUser == null) {
+      user = CurrentUser("name default error", "e-mail default error");
+      print(widget.currentUser.name);
+    } else {
+      user = widget.currentUser;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: const Color(0xffe5e5e5),
       drawer: NavDrawer(currentUser: user),
       appBar: AppBar(
@@ -84,26 +107,35 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
               const Divider(height: 10, color: Colors.transparent),
               SizedBox(
                 width: 340,
-                child: TextFormField(
-                  maxLength: 20,
-                  maxLines: 1,
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 16,
-                  ),
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.all(Radius.circular(19.0))
+                child: Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    controller: _titleController,
+                    maxLength: 20,
+                    maxLines: 1,
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
                     ),
-                    filled: true,
-                    fillColor: Colors.white,
-                    hintText: "Escreva um título",
-                    hintStyle: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w100
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(19.0))
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      hintText: "Escreva um título",
+                      hintStyle: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w100
+                      ),
                     ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Preencha o título do pedido de ajuda";
+                      }
+                    },
                   ),
                 ),
               ),
@@ -121,6 +153,7 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
               SizedBox(
                 width: 340,
                 child: TextFormField(
+                  controller: _descriptionController,
                   maxLength: 50,
                   maxLines: 4,
                   style: const TextStyle(
@@ -162,7 +195,16 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
     return ElevatedButton(
         onPressed: () {
           if(text == "Confirmar") {
-            Navigator.of(context).pop();
+            if(helpSeverity == -1) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text("É necessário selecionar a gravidade do pedido"),
+                backgroundColor: Colors.red,
+              ));
+            } else {
+              if(_formKey.currentState!.validate()) {
+                Navigator.of(context).pop();
+              }
+            }
           } else {
             if (text == "Cancelar") {
               Navigator.of(context).pop();
@@ -170,7 +212,7 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
           }
         },
         style: ElevatedButton.styleFrom(
-            primary: Color(buttonColor),
+            backgroundColor: Color(buttonColor),
             fixedSize: const Size(150, 40),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)
@@ -192,11 +234,22 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
     return ElevatedButton(
         onPressed: () {
           setState(() {
+            if(label == "Baixa") {
+              helpSeverity = 1;
+            } else {
+              if(label == "Média") {
+                helpSeverity = 2;
+              } else {
+                if(label == "Alta") {
+                  helpSeverity = 3;
+                }
+              }
+            }
             buttonSelected = label;
           });
         },
         style: ElevatedButton.styleFrom(
-            primary: (buttonSelected == label || buttonSelected == null) ? Color(buttonColor) : const Color(0xffcdcdcd),
+            backgroundColor: (buttonSelected == label || buttonSelected == null) ? Color(buttonColor) : const Color(0xffcdcdcd),
             fixedSize: const Size(110, 50),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)
