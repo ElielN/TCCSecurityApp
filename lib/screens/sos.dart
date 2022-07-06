@@ -13,7 +13,6 @@ import '../shared/models/user.dart';
 class SOSPage extends StatefulWidget {
   final CurrentUser currentUser;
   const SOSPage({Key? key, required this.currentUser}) : super(key: key);
-  //const SOSPage({super.key, this.user});
 
 
   @override

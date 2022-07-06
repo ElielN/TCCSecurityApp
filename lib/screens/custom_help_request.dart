@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:tcc_security_app/Widgets/drawer.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:tcc_security_app/screens/sos.dart';
 import '../shared/models/user.dart';
 
@@ -36,10 +38,33 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
 
     if(widget.currentUser == null) {
       user = CurrentUser("name default error", "e-mail default error");
-      print(widget.currentUser.name);
     } else {
       user = widget.currentUser;
     }
+  }
+
+  Future<Position> getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
+    return position;
+  }
+
+  void customHelp(Position location) {
+    final customHelpData = <String, dynamic>{
+      "currentLocation": {
+        "latitude": location.latitude,
+        "longitude": location.longitude,
+      },
+      "title": _titleController.text,
+      "description": _descriptionController.text,
+      "urgency": helpSeverity,
+      "showNumber": true,
+      "date": DateTime.now(),
+      "userData": user.email
+    };
+    FirebaseFirestore.instance
+        .collection('requests')
+        .doc(user.email)
+        .set(customHelpData);
   }
 
   @override
@@ -202,6 +227,11 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
               ));
             } else {
               if(_formKey.currentState!.validate()) {
+                getCurrentLocation().then((value) {
+                  customHelp(value);
+                  print(value.latitude);
+                  print(value.longitude);
+                });
                 Navigator.of(context).pop();
               }
             }
