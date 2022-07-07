@@ -1,3 +1,4 @@
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,8 @@ class SOSPage extends StatefulWidget {
 class _SOSPageState extends State<SOSPage> {
 
   int sosColor = 0xfff03131;
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final bool _obscurePassword = true;
 
@@ -98,9 +101,41 @@ class _SOSPageState extends State<SOSPage> {
         .doc(user.email).delete();
   }
 
+  Future<void> sosButton() async {
+    if(sosColor == 0xfff03131) {
+      if(await Geolocator.isLocationServiceEnabled()) {
+        getCurrentLocation().then((value) {
+          turnOnSOS(value);
+          print(value.latitude);
+          print(value.longitude);
+          });
+        setState(() {
+          sosColor = 0xff4caf50;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Por favor, ligue seu GPS"),
+          backgroundColor: Colors.red,
+        ));
+        const AndroidIntent intent = AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+        await intent.launch();
+      }
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return alertDialogPassword();
+        });
+      setState(() {
+        sosColor = 0xfff03131;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       drawer: NavDrawer(currentUser: user),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -132,25 +167,8 @@ class _SOSPageState extends State<SOSPage> {
               ),
               const Divider(height: 20, color: Colors.transparent),
               GestureDetector(
-                onTap: () {
-                  setState(() {
-                    if(sosColor == 0xfff03131) {
-                      getCurrentLocation().then((value) {
-                        turnOnSOS(value);
-                        print(value.latitude);
-                        print(value.longitude);
-                      });
-                      sosColor = 0xff4caf50;
-                    } else {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context){
-                            return alertDialogPassword();
-                          }
-                      );
-                      sosColor = 0xfff03131;
-                    }
-                  });
+                onTap: () async {
+                  sosButton();
                 },
                 child: Container(
                   height: 260,

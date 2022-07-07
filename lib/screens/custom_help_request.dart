@@ -1,3 +1,4 @@
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -218,7 +219,7 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
 
   Widget buttonConfirmCancel(String text, int buttonColor) {
     return ElevatedButton(
-        onPressed: () {
+        onPressed: () async {
           if(text == "Confirmar") {
             if(helpSeverity == -1) {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -227,12 +228,21 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
               ));
             } else {
               if(_formKey.currentState!.validate()) {
-                getCurrentLocation().then((value) {
-                  customHelp(value);
-                  print(value.latitude);
-                  print(value.longitude);
-                });
-                Navigator.of(context).pop();
+                if(await Geolocator.isLocationServiceEnabled()){
+                  getCurrentLocation().then((value) {
+                    customHelp(value);
+                    print(value.latitude);
+                    print(value.longitude);
+                  });
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Por favor, ligue seu GPS"),
+                    backgroundColor: Colors.red,
+                  ));
+                  const AndroidIntent intent = AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+                  await intent.launch();
+                }
               }
             }
           } else {
