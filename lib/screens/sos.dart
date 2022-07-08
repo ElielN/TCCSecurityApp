@@ -8,6 +8,7 @@ import 'package:tcc_security_app/screens/custom_help_request.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:tcc_security_app/screens/requisition_map.dart';
 
 import '../shared/models/user.dart';
 
@@ -221,13 +222,13 @@ class _SOSPageState extends State<SOSPage> {
             if(text == "Abrir mapa de pedidos") {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CustomHelpPage(currentUser: user)),
+                MaterialPageRoute(builder: (context) => MapPage(currentUser: user)),
               );
             }
           }
         },
         style: ElevatedButton.styleFrom(
-            primary: Color(color),
+            backgroundColor: Color(color),
             fixedSize: const Size(275, 60),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)
