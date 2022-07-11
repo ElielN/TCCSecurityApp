@@ -60,7 +60,9 @@ class _CustomHelpPageState extends State<CustomHelpPage> {
       "urgency": helpSeverity,
       "showNumber": true,
       "date": DateTime.now(),
-      "userData": user.email
+      "userData": user.email,
+      "loginByGoogle": user.loginByGoogle,
+      "avatar": user.avatar
     };
     FirebaseFirestore.instance
         .collection('requests')

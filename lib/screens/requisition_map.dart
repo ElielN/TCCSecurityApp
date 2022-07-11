@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../Widgets/card_request.dart';
 import '../Widgets/drawer.dart';
 import '../shared/models/user.dart';
 
@@ -74,7 +76,63 @@ class _MapPageState extends State<MapPage> {
                     )
                   ),
                 )
+              ),
+              const Divider(height: 30, color: Colors.transparent,),
+              SizedBox(
+                height: 320,
+                width: MediaQuery.of(context).size.width,
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection("requests").orderBy("urgency").snapshots(),
+                  builder: (context, snapshot) {
+                    switch(snapshot.connectionState) {
+                      case ConnectionState.none:
+                      case ConnectionState.waiting:
+                        return const Center (
+                          child: CircularProgressIndicator(),
+                        );
+                      default:
+                        List<DocumentSnapshot> documents = snapshot.data!.docs.reversed.toList();
+                        print("CHEGOU AQUI!!!!!!!!");
+                        return ListView.builder(
+                          itemCount: documents.length,
+                          reverse: false,
+                          itemBuilder: (context, index) {
+                            return CardRequest(currentUser: user, data: documents[index].data()!);
+                          }
+                        );
+                    }
+                  },
+                ),
               )
+              /*
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection("requests").orderBy("urgency").snapshots(),
+                  builder: (context, snapshot) {
+                    switch(snapshot.connectionState) {
+                      case ConnectionState.none:
+                      case ConnectionState.waiting:
+                        return const Center (
+                          child: CircularProgressIndicator(),
+                        );
+                      default:
+                        List<DocumentSnapshot> documents = snapshot.data!.docs.reversed.toList();
+                        print("CHEGOU AQUI!!!!!!!!");
+                        return ListView.builder(
+                          itemCount: documents.length,
+                          reverse: false,
+                          itemBuilder: (context, index) {
+                            return SizedBox(
+                              width: 200,
+                              height: 200,
+                              child: Text(documents[index].id),
+                            );
+                          }
+                        );
+                      }
+                    },
+                )
+              ),*/
             ],
           ),
         ),

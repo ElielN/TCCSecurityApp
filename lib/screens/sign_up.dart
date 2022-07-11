@@ -64,6 +64,8 @@ class _SignUpPageState extends State<SignUpPage> {
         final userByGoogle = <String, dynamic>{
           "email": _currentUser?.email,
           "name": _currentUser?.displayName,
+          "loginByGoogle": true,
+          "avatar": _currentUser?.photoURL,
         };
         FirebaseFirestore.instance
             .collection('users')
@@ -145,6 +147,8 @@ class _SignUpPageState extends State<SignUpPage> {
       final userByGoogle = <String, dynamic>{
         "email": userAuth?.email,
         "name": userAuth?.displayName,
+        "loginByGoogle": true,
+        "avatar": userAuth?.photoURL
       };
       FirebaseFirestore.instance
           .collection('users')
@@ -192,6 +196,7 @@ class _SignUpPageState extends State<SignUpPage> {
       final user = <String, dynamic>{
         "email": emailController.text,
         "name": nameController.text,
+        "loginByGoogle": false,
         "password": passwordController.text
       };
       FirebaseFirestore.instance
@@ -199,7 +204,7 @@ class _SignUpPageState extends State<SignUpPage> {
           .doc(emailController.text)
           .set(user);
 
-      userObj = CurrentUser(user["name"], user["email"]);
+      userObj = CurrentUser(user["name"], user["email"], loginByGoogle: false);
 
       return true;
     }
@@ -320,7 +325,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 12,
-                        ))),
+                        )
+                    )
+                ),
               ],
             ),
           ),
