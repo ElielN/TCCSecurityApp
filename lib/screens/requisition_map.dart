@@ -1,6 +1,8 @@
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../Widgets/card_request.dart';
@@ -22,6 +24,8 @@ class _MapPageState extends State<MapPage> {
   late GoogleMapController mapController;
 
   final LatLng _center = const LatLng(-20.760968964329745, -42.870195388449055);
+  late LatLng _point = const LatLng(62.14543827756144, -7.005040280846173);
+  bool locationEnabled = false;
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -69,11 +73,18 @@ class _MapPageState extends State<MapPage> {
                 child: ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(19)),
                   child: GoogleMap(
+                    myLocationEnabled: locationEnabled,
                     onMapCreated: _onMapCreated,
                     initialCameraPosition: CameraPosition(
                         target: _center,
-                        zoom: 17.0
-                    )
+                        zoom: 13.0
+                    ),
+                    markers: {
+                      Marker(
+                        markerId: const MarkerId("Help"),
+                        position: _point
+                      )
+                    },
                   ),
                 )
               ),
@@ -97,8 +108,23 @@ class _MapPageState extends State<MapPage> {
                           reverse: false,
                           itemBuilder: (context, index) {
                             return GestureDetector(
-                              onTap: () {
+                              onTap: () async {
+                                setState((){
+                                  _point = LatLng(documents[index].data()!["currentLocation"]["latitude"], documents[index].data()!["currentLocation"]["longitude"]);
+                                });
                                 print(documents[index].data()!["userData"]);
+                                if(await Geolocator.isLocationServiceEnabled()) {
+                                  setState((){
+                                    locationEnabled = true;
+                                  });
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                  content: Text("Por favor, ligue seu GPS"),
+                                  backgroundColor: Colors.red,
+                                  ));
+                                  const AndroidIntent intent = AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+                                  await intent.launch();
+                                }
                               },
                               child: CardRequest(currentUser: user, data: documents[index].data()!),
                             );
@@ -107,36 +133,25 @@ class _MapPageState extends State<MapPage> {
                     }
                   },
                 ),
-              )
-              /*
-              Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance.collection("requests").orderBy("urgency").snapshots(),
-                  builder: (context, snapshot) {
-                    switch(snapshot.connectionState) {
-                      case ConnectionState.none:
-                      case ConnectionState.waiting:
-                        return const Center (
-                          child: CircularProgressIndicator(),
-                        );
-                      default:
-                        List<DocumentSnapshot> documents = snapshot.data!.docs.reversed.toList();
-                        print("CHEGOU AQUI!!!!!!!!");
-                        return ListView.builder(
-                          itemCount: documents.length,
-                          reverse: false,
-                          itemBuilder: (context, index) {
-                            return SizedBox(
-                              width: 200,
-                              height: 200,
-                              child: Text(documents[index].id),
-                            );
-                          }
-                        );
-                      }
-                    },
-                )
-              ),*/
+              ),
+              ElevatedButton(
+                  onPressed: (){
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff4D4C4C),
+                      fixedSize: const Size(190, 50),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0))),
+                  child: const Text("Sair",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontFamily: "Poppins",
+                        fontWeight: FontWeight.bold
+                      )
+                  )
+              ),
             ],
           ),
         ),

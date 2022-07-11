@@ -84,6 +84,7 @@ class _SOSPageState extends State<SOSPage> {
         "latitude": location.latitude,
         "longitude": location.longitude,
       },
+      "title": "SOS",
       "description": "",
       "urgency": 4,
       "showNumber": true,
@@ -325,7 +326,7 @@ class _SOSPageState extends State<SOSPage> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                              primary: const Color(0xff4caf50),
+                              backgroundColor: const Color(0xff4caf50),
                               elevation: 5.0,
                               fixedSize: const Size(123, 40),
                               textStyle: const TextStyle(
@@ -343,7 +344,7 @@ class _SOSPageState extends State<SOSPage> {
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                              primary: Color(0xfff03131),
+                              backgroundColor: Color(0xfff03131),
                               elevation: 5.0,
                               fixedSize: const Size(123, 40),
                               textStyle: const TextStyle(
