@@ -40,13 +40,13 @@ class _CardRequestState extends State<CardRequest> {
       urgencyColor = 0xffffffff;
     } else {
       if(requestData["urgency"] == 2) {
-        urgencyColor = 0x805AC4FF;
+        urgencyColor = 0xff5AC4FF;
       } else {
         if(requestData["urgency"] == 3) {
-          urgencyColor = 0x80FFEF5C;
+          urgencyColor = 0xffFFEF5C;
         } else {
           if(requestData["urgency"] == 4) {
-            urgencyColor = 0x80F03131;
+            urgencyColor = 0xffF03131;
           }
         }
       }
@@ -58,49 +58,53 @@ class _CardRequestState extends State<CardRequest> {
     return Container(
       width: MediaQuery.of(context).size.width,
       margin: const EdgeInsets.only(left: 30, right: 30, top: 10),
-      decoration: BoxDecoration(
+      child: Card(
+        semanticContainer: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20)
+        ),
         color: Color(urgencyColor),
-        borderRadius: const BorderRadius.all(Radius.circular(20))
-      ),
-      child: Row(
-        children: [
-          Container(
-            margin: const EdgeInsets.only(top: 20, bottom: 20, left: 10, right: 20),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(100.0),
-              child: requestData["loginByGoogle"] ?
-              Image.network(
-                requestData["avatar"],
-                height: 50,
-                width: 50,
-                fit: BoxFit.cover,
-              )
-                  :
-              Image.asset(
-                requestData["avatar"],
-                height: 50,
-                width: 50,
-                fit: BoxFit.cover,
+        elevation: 5,
+        child: Row(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 20, bottom: 20, left: 10, right: 20),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(100.0),
+                child: requestData["loginByGoogle"] ?
+                Image.network(
+                  requestData["avatar"],
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.cover,
+                )
+                    :
+                Image.asset(
+                  requestData["avatar"],
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 10,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(requestData["title"],
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold
-                  )),
-                Text(requestData["description"]),
-                Text(DateFormat('dd/MM/yyyy - kk:mm').format(requestData["date"].toDate()).toString())
-              ],
+            Expanded(
+              flex: 10,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(requestData["title"],
+                      style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold
+                      )),
+                  Text(requestData["description"]),
+                  Text(DateFormat('dd/MM/yyyy - kk:mm').format(requestData["date"].toDate()).toString())
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+      )
     );
   }
 }
