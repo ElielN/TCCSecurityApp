@@ -92,12 +92,16 @@ class _MapPageState extends State<MapPage> {
                         );
                       default:
                         List<DocumentSnapshot> documents = snapshot.data!.docs.reversed.toList();
-                        print("CHEGOU AQUI!!!!!!!!");
                         return ListView.builder(
                           itemCount: documents.length,
                           reverse: false,
                           itemBuilder: (context, index) {
-                            return CardRequest(currentUser: user, data: documents[index].data()!);
+                            return GestureDetector(
+                              onTap: () {
+                                print(documents[index].data()!["userData"]);
+                              },
+                              child: CardRequest(currentUser: user, data: documents[index].data()!),
+                            );
                           }
                         );
                     }

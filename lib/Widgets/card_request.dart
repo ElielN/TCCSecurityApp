@@ -30,8 +30,6 @@ class _CardRequestState extends State<CardRequest> {
 
     user = widget.currentUser;
     requestData = widget.data;
-    //myDateTime = requestData["date"].toDate();
-    //date = DateTime(requestData["date"]);
   }
 
   @override
@@ -82,6 +80,7 @@ class _CardRequestState extends State<CardRequest> {
                 requestData["avatar"],
                 height: 50,
                 width: 50,
+                fit: BoxFit.cover,
               ),
             ),
           ),
