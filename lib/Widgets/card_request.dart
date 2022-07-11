@@ -80,8 +80,8 @@ class _CardRequestState extends State<CardRequest> {
                   :
               Image.asset(
                 requestData["avatar"],
-                height: 150,
-                width: 150,
+                height: 50,
+                width: 50,
               ),
             ),
           ),
