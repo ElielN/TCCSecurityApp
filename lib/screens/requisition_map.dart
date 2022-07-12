@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 import '../Widgets/card_request.dart';
 import '../Widgets/drawer.dart';
@@ -22,10 +23,11 @@ class _MapPageState extends State<MapPage> {
   late CurrentUser user;
 
   late GoogleMapController mapController;
-
-  final LatLng _center = const LatLng(-20.760968964329745, -42.870195388449055);
-  late LatLng _point = const LatLng(62.14543827756144, -7.005040280846173);
-  bool locationEnabled = false;
+  PolylinePoints polylinePoints = PolylinePoints();
+  final LatLng _initialPoint = const LatLng(-20.760968964329745, -42.870195388449055);
+  late LatLng _helpPoint;
+  late LatLng _userPoint;
+  bool requestSelected = false;
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -35,11 +37,12 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
 
-    if(widget.currentUser == null) {
-      user = CurrentUser("name default error", "e-mail default error");
-    } else {
-      user = widget.currentUser;
-    }
+    user = widget.currentUser;
+  }
+
+  Future<Position> getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
+    return position;
   }
 
   @override
@@ -62,6 +65,26 @@ class _MapPageState extends State<MapPage> {
           },
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: ElevatedButton(
+          onPressed: (){
+            Navigator.of(context).pop();
+          },
+          style: ElevatedButton.styleFrom(
+              elevation: 10,
+              backgroundColor: const Color(0xff4D4C4C),
+              fixedSize: const Size(190, 50),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0))),
+          child: const Text("Sair",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontFamily: "Poppins",
+                  fontWeight: FontWeight.bold
+              )
+          )
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -73,24 +96,33 @@ class _MapPageState extends State<MapPage> {
                 child: ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(19)),
                   child: GoogleMap(
-                    myLocationEnabled: locationEnabled,
+                    polylines:
+                    {
+                      if(requestSelected) Polyline(
+                        polylineId: const PolylineId("Polyline help"),
+                        width: 1,
+                        color: Colors.red,
+                        points: [_userPoint, _helpPoint],
+                      ),
+                    },
+                    myLocationEnabled: requestSelected,
                     onMapCreated: _onMapCreated,
                     initialCameraPosition: CameraPosition(
-                        target: _center,
+                        target: _initialPoint,
                         zoom: 13.0
                     ),
                     markers: {
-                      Marker(
+                      if(requestSelected) Marker(
                         markerId: const MarkerId("Help"),
-                        position: _point
+                        position: _helpPoint
                       )
                     },
                   ),
                 )
               ),
-              const Divider(height: 30, color: Colors.transparent,),
+              //const Divider(height: 5, color: Colors.transparent,),
               SizedBox(
-                height: 320,
+                height: 415,
                 width: MediaQuery.of(context).size.width,
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance.collection("requests").orderBy("urgency").snapshots(),
@@ -104,26 +136,27 @@ class _MapPageState extends State<MapPage> {
                       default:
                         List<DocumentSnapshot> documents = snapshot.data!.docs.reversed.toList();
                         return ListView.builder(
+                          physics: const BouncingScrollPhysics(),
                           itemCount: documents.length,
                           reverse: false,
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               onTap: () async {
-                                setState((){
-                                  _point = LatLng(documents[index].data()!["currentLocation"]["latitude"], documents[index].data()!["currentLocation"]["longitude"]);
-                                });
-                                print(documents[index].data()!["userData"]);
                                 if(await Geolocator.isLocationServiceEnabled()) {
-                                  setState((){
-                                    locationEnabled = true;
+                                  getCurrentLocation().then((value) async {
+                                    setState((){
+                                      _userPoint = LatLng(value.latitude, value.longitude);
+                                      _helpPoint = LatLng(documents[index].data()!["currentLocation"]["latitude"], documents[index].data()!["currentLocation"]["longitude"]);
+                                      requestSelected = true;
+                                    });
                                   });
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                  content: Text("Por favor, ligue seu GPS"),
-                                  backgroundColor: Colors.red,
-                                  ));
-                                  const AndroidIntent intent = AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
-                                  await intent.launch();
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                      content: Text("Por favor, ligue seu GPS"),
+                                      backgroundColor: Colors.red,
+                                    ));
+                                    const AndroidIntent intent = AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+                                    await intent.launch();
                                 }
                               },
                               child: CardRequest(currentUser: user, data: documents[index].data()!),
@@ -133,24 +166,6 @@ class _MapPageState extends State<MapPage> {
                     }
                   },
                 ),
-              ),
-              ElevatedButton(
-                  onPressed: (){
-                    Navigator.of(context).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xff4D4C4C),
-                      fixedSize: const Size(190, 50),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0))),
-                  child: const Text("Sair",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontFamily: "Poppins",
-                        fontWeight: FontWeight.bold
-                      )
-                  )
               ),
             ],
           ),
