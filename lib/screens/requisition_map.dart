@@ -45,6 +45,14 @@ class _MapPageState extends State<MapPage> {
     return position;
   }
 
+  void cancelRequest() {
+    setState(() {
+      FirebaseFirestore.instance
+          .collection('requests')
+          .doc(user.email).delete();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,7 +128,6 @@ class _MapPageState extends State<MapPage> {
                   ),
                 )
               ),
-              //const Divider(height: 5, color: Colors.transparent,),
               SizedBox(
                 height: 415,
                 width: MediaQuery.of(context).size.width,
@@ -159,7 +166,7 @@ class _MapPageState extends State<MapPage> {
                                     await intent.launch();
                                 }
                               },
-                              child: CardRequest(currentUser: user, data: documents[index].data()!),
+                              child: CardRequest(currentUser: user, data: documents[index].data()!, cancelRequest: cancelRequest),
                             );
                           }
                         );

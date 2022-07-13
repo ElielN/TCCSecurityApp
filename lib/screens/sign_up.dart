@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tcc_security_app/screens/sos.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:email_validator/email_validator.dart';
+import 'package:random_password_generator/random_password_generator.dart';
 import '../shared/models/user.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -31,6 +32,8 @@ class _SignUpPageState extends State<SignUpPage> {
   User? _currentUser;
 
   late CurrentUser userObj;
+
+  final password = RandomPasswordGenerator();
 
   @override
   void initState() {
@@ -59,13 +62,17 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<User?> _signInGoogle(BuildContext context) async {
     if (_currentUser != null && _currentUser!.email!.contains("@ufv.br")) {
-      userObj = CurrentUser(_currentUser!.displayName!, _currentUser!.email!, avatar: _currentUser!.photoURL!, loginByGoogle: true);
+      userObj = CurrentUser(_currentUser!.displayName!, _currentUser!.email!, avatar: _currentUser!.photoURL!, loginByGoogle: true, number: _currentUser?.phoneNumber);
       if (!(await _emailAlreadyExists(_currentUser?.email))) {
+        String newPassword = password.randomPassword(letters: true, numbers: true, passwordLength: 10);
         final userByGoogle = <String, dynamic>{
           "email": _currentUser?.email,
           "name": _currentUser?.displayName,
           "loginByGoogle": true,
           "avatar": _currentUser?.photoURL,
+          "password": newPassword,
+          "number": _currentUser?.phoneNumber,
+          "registration": ""
         };
         FirebaseFirestore.instance
             .collection('users')
@@ -143,12 +150,17 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     }
 
+    String newPassword = password.randomPassword(letters: true, numbers: true, passwordLength: 10);
+
     if (!(await _emailAlreadyExists(userAuth?.email))) {
       final userByGoogle = <String, dynamic>{
         "email": userAuth?.email,
         "name": userAuth?.displayName,
         "loginByGoogle": true,
-        "avatar": userAuth?.photoURL
+        "avatar": userAuth?.photoURL,
+        "password": newPassword,
+        "number": "",
+        "registration": ""
       };
       FirebaseFirestore.instance
           .collection('users')
@@ -197,7 +209,9 @@ class _SignUpPageState extends State<SignUpPage> {
         "email": emailController.text,
         "name": nameController.text,
         "loginByGoogle": false,
-        "password": passwordController.text
+        "password": passwordController.text,
+        "number": "",
+        "registration": ""
       };
       FirebaseFirestore.instance
           .collection('users')

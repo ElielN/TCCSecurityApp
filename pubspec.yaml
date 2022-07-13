@@ -48,6 +48,7 @@ dependencies:
   google_map_polyline_new: ^0.3.0+2
   flutter_dotenv: ^4.0.0-nullsafety.0
   flutter_polyline_points: ^1.0.0
+  random_password_generator: ^0.2.1
 
 dev_dependencies:
   flutter_test:

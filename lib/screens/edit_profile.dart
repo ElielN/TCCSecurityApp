@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:tcc_security_app/screens/sos.dart';
 
 import '../shared/models/user.dart';
 
@@ -15,11 +14,12 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
 
   late CurrentUser user;
+  late Map<String, dynamic> newData;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _registrationController = TextEditingController();
-  final TextEditingController _cpfController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
@@ -38,10 +38,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         } else {
           _registrationController.text = " ";
         }
-        if(data.containsKey('cpf')) {
-          _cpfController.text = data["cpf"];
+        if(data.containsKey('number')) {
+          _phoneController.text = data["number"];
         } else {
-          _cpfController.text = " ";
+          _phoneController.text = " ";
         }
         if(data.containsKey('password')) {
           _passwordController.text = data["password"];
@@ -52,7 +52,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
         _emailController.text = data["email"];
       }
     }
+    newData = <String, dynamic>{
+      "email": _emailController.text,
+      "name": _nameController.text,
+      "password": _passwordController.text,
+      "registration": _registrationController.text,
+      "number": _phoneController.text
+    };
     //super.setState(() {});
+  }
+
+  Future<void> setPersonalData() async {
+    newData = <String, dynamic>{
+    "email": _emailController.text,
+    "name": _nameController.text,
+    "password": _passwordController.text,
+    "registration": _registrationController.text,
+    "number": _phoneController.text
+    };
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user?.email)
+        .update(newData);
   }
 
   @override
@@ -103,7 +125,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     const Divider(height: 20, color: Colors.transparent),
                     buildTextInput("Matrícula", _registrationController, hint: _nameController.text),
                     const Divider(height: 20, color: Colors.transparent),
-                    buildTextInput("CPF", _cpfController, hint: _nameController.text),
+                    buildTextInput("Celular", _phoneController, hint: _nameController.text),
                     const Divider(height: 20, color: Colors.transparent),
                     buildTextInput("Senha", _passwordController, obscure: true, hint: _nameController.text),
                   ],
@@ -111,11 +133,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
               const Divider(height: 40, color: Colors.transparent),
               ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
+                  onPressed: () async {
+                    await setPersonalData().then((value) => Navigator.of(context).pop(newData));
                   },
                   style: ElevatedButton.styleFrom(
-                      primary: const Color(0xff5ac4ff),
+                      backgroundColor: const Color(0xff5ac4ff),
                       fixedSize: const Size(213, 50),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0)
