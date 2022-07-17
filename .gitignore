@@ -31,7 +31,7 @@
 .pub/
 /build/
 
-android/app/build/*
+/android/app/build/*
 
 # Web related
 lib/generated_plugin_registrant.dart

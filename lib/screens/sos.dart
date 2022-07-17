@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:tcc_security_app/Widgets/drawer.dart';
 import 'package:tcc_security_app/screens/custom_help_request.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+import 'package:crypt/crypt.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tcc_security_app/screens/requisition_map.dart';
 
@@ -68,7 +67,8 @@ class _SOSPageState extends State<SOSPage> {
       var docSnapshot = await FirebaseFirestore.instance.collection("users").doc(user.email).get();
       if(docSnapshot.exists) {
         Map<String, dynamic>? data = docSnapshot.data();
-        if(data?["password"] == pass) {
+        final crypt = Crypt(data?["password"]);
+        if(crypt.match(pass)) {
           success = true;
         } else {
           success = false;

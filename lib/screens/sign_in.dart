@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tcc_security_app/screens/sign_up.dart';
 import 'package:tcc_security_app/screens/sos.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:crypt/crypt.dart';
 import '../shared/models/user.dart';
 
 class SignInPage extends StatefulWidget {
@@ -148,7 +149,8 @@ class _SignInPageState extends State<SignInPage> {
     var docSnapshot = await FirebaseFirestore.instance.collection("users").doc(emailController.text).get();
     if(docSnapshot.exists) {
       Map<String, dynamic>? data = docSnapshot.data();
-      if(passwordController.text == data!["password"]){
+      final crypt = Crypt(data?["password"]);
+      if(crypt.match(passwordController.text)){
         userObj = CurrentUser(data!["name"], data!["email"], loginByGoogle: false);
         return true;
       } else {

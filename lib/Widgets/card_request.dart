@@ -33,11 +33,7 @@ class _CardRequestState extends State<CardRequest> {
     user = widget.currentUser;
     requestData = widget.data;
     cancelRequestHelp = widget.cancelRequest;
-  }
 
-  @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
 
     if(requestData["urgency"] == 1) {
       urgencyColor = 0xffffffff;

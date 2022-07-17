@@ -7,6 +7,7 @@ import 'package:tcc_security_app/screens/sos.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:email_validator/email_validator.dart';
 import 'package:random_password_generator/random_password_generator.dart';
+import 'package:crypt/crypt.dart';
 import '../shared/models/user.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -65,12 +66,13 @@ class _SignUpPageState extends State<SignUpPage> {
       userObj = CurrentUser(_currentUser!.displayName!, _currentUser!.email!, avatar: _currentUser!.photoURL!, loginByGoogle: true, number: _currentUser?.phoneNumber);
       if (!(await _emailAlreadyExists(_currentUser?.email))) {
         String newPassword = password.randomPassword(letters: true, numbers: true, passwordLength: 10);
+        final passCrypt = Crypt.sha256(newPassword);
         final userByGoogle = <String, dynamic>{
           "email": _currentUser?.email,
           "name": _currentUser?.displayName,
           "loginByGoogle": true,
           "avatar": _currentUser?.photoURL,
-          "password": newPassword,
+          "password": passCrypt.toString(),
           "number": _currentUser?.phoneNumber,
           "registration": ""
         };
@@ -151,14 +153,14 @@ class _SignUpPageState extends State<SignUpPage> {
     }
 
     String newPassword = password.randomPassword(letters: true, numbers: true, passwordLength: 10);
-
+    final passCrypt = Crypt.sha256(newPassword);
     if (!(await _emailAlreadyExists(userAuth?.email))) {
       final userByGoogle = <String, dynamic>{
         "email": userAuth?.email,
         "name": userAuth?.displayName,
         "loginByGoogle": true,
         "avatar": userAuth?.photoURL,
-        "password": newPassword,
+        "password": passCrypt.toString(),
         "number": "",
         "registration": ""
       };
@@ -205,11 +207,13 @@ class _SignUpPageState extends State<SignUpPage> {
       ));
       return false;
     } else {
+      passwordController.text = passwordController.text.replaceAll(" ", "");
+      final passCrypt = Crypt.sha256(passwordController.text);
       final user = <String, dynamic>{
         "email": emailController.text,
         "name": nameController.text,
         "loginByGoogle": false,
-        "password": passwordController.text,
+        "password": passCrypt.toString(),
         "number": "",
         "registration": ""
       };

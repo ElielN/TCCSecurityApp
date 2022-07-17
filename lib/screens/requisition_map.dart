@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 import '../Widgets/card_request.dart';
 import '../Widgets/drawer.dart';
@@ -23,7 +22,6 @@ class _MapPageState extends State<MapPage> {
   late CurrentUser user;
 
   late GoogleMapController mapController;
-  PolylinePoints polylinePoints = PolylinePoints();
   final LatLng _initialPoint = const LatLng(-20.760968964329745, -42.870195388449055);
   late LatLng _helpPoint;
   late LatLng _userPoint;
